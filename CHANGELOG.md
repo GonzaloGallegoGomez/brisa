@@ -1,5 +1,17 @@
 # Cambios
 
+## 0.5.0 — 2026-11-15
+
+- Vista Hoy inicial y lista semanal alternativa para móvil.
+- Edición de bloques, objetivos y rutinas; cambios o cancelación de una sola ocurrencia.
+- Progreso real: hecho, minutos parciales y posponer; correcciones sin duplicar.
+- Propuesta antes de guardar: bloques antes/después, horas por objetivo, ajustar/cancelar/aplicar y deshacer.
+- Preferencias de sesiones, pausas, desplazamientos, comida, imprevistos, días libres, límites y franja preferida.
+- Dificultad de objetivos y alternativas explícitas cuando no cabe todo.
+- Migración conservando datos y sin dar por estudiados bloques pasados.
+- Botones accesibles, etiquetas de hora, foco visible, ajustes móviles y comprobación de contraste en cinco paletas.
+- Cuentas e IA externa siguen sin activar; limitación de QA visual documentada.
+
 ## 0.4.0 — 2026-11-15
 
 - Centro legal y cuatro documentos fechados de borrador para España.
