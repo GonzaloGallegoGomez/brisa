@@ -8,7 +8,7 @@ Con Python 3: `python3 -m http.server 3000 --directory dist` y abrir http://loca
 
 ## Prueba pública en preparación
 
-Documentos adaptados a mayores de 18 años, 20 días gratuitos y 30 posteriores para exportar antes de eliminar cuentas que no continúen expresamente. Sin tarjeta ni cobros automáticos. SMTP y recuperación comprobados por el titular; declaración de edad comprobada en servidor. Las fechas, identificación del titular, proveedores y cierre operativo siguen pendientes. Ver [guía de apertura y cierre](docs/lanzamiento-mvp.md). El registro permanece cerrado.
+Documentos adaptados a mayores de 18 años, 60 días gratuitos y 30 posteriores para exportar antes de eliminar cuentas que no continúen expresamente. Sin tarjeta ni cobros automáticos. SMTP y recuperación comprobados por el titular; declaración de edad comprobada en servidor. Las fechas, identificación del titular, proveedores y cierre operativo siguen pendientes. Ver [guía de apertura y cierre](docs/lanzamiento-mvp.md). El registro permanece cerrado.
 
 ## Cuenta de prueba y sincronización Supabase
 
@@ -105,4 +105,4 @@ El centro legal y los documentos v0.4.0-borrador siguen accesibles. No se ha act
 
 ## Validación
 
-`npm test`: planificación a 20 días, continuidad entre semanas, conflictos y recurrencias, progreso parcial, corrección sin duplicados, posposición, pausas/márgenes, preferencias, excepciones, propuestas sin escritura al cancelar, edición, restauración, paletas, controles de horas y centro legal. Las pruebas de aplicación usan DOM simulado y no sustituyen una revisión visual de navegador. `npm run check`: sintaxis de los scripts de la aplicación y del centro legal.
+`npm test`: planificación a 60 días, continuidad entre semanas, conflictos y recurrencias, progreso parcial, corrección sin duplicados, posposición, pausas/márgenes, preferencias, excepciones, propuestas sin escritura al cancelar, edición, restauración, paletas, controles de horas y centro legal. Las pruebas de aplicación usan DOM simulado y no sustituyen una revisión visual de navegador. `npm run check`: sintaxis de los scripts de la aplicación y del centro legal.

@@ -1,6 +1,8 @@
 # Brisa: apertura y cierre del MVP
 
-Estado: 15-11-2026. Borradores legales 0.9.0-borrador preparados; registro cerrado. El enlace público permite modo local. No hay cobros, tarjeta ni renovación automática. La recepción del correo y recuperación de contraseña han sido confirmadas por el titular. SMTP figura listo en servidor. Prueba aprobada: mayores de 18 años, 20 días globales y 30 posteriores para exportar; después eliminar cuentas sin continuación expresa.
+Estado: 15-11-2026. Borradores legales 0.9.1-borrador preparados; registro cerrado. El enlace público permite modo local. No hay cobros, tarjeta ni renovación automática. La recepción del correo y recuperación de contraseña han sido confirmadas por el titular. SMTP figura listo en servidor. Prueba aprobada: mayores de 18 años, 60 días globales y 30 posteriores para exportar; después eliminar cuentas sin continuación expresa.
+
+Fechas previstas en Europe/Madrid: inicio 16-11-2026 00:00, fin 15-01-2027 00:00 y fin de exportación 14-02-2027 00:00. No hay apertura ni eliminación automatizada activada. Si no se completa la preparación a tiempo, ajustar las fechas antes del alta.
 
 ## Documentos preparados
 
@@ -15,7 +17,7 @@ Son borradores revisables, no garantía de inmunidad a reclamaciones. La revisi�
 ## Pendientes del titular
 
 1. Completar domicilio de actividad/residencia e identificación fiscal que procedan para el aviso legal conforme al artículo 10 LSSI; resolver antes cómo facilitar públicamente los datos exigibles. No enviar DNI o domicilio personal por chat ni incorporarlos automáticamente al repositorio público. Si se usa domicilio profesional, debe ser real y adecuado al requisito, no inventado.
-2. Elegir fecha/hora de apertura y final (20 días naturales globales) y de eliminación (30 días naturales posteriores al final), con zona Europe/Madrid y fechas explícitas visibles antes del alta. No hay cuenta atrás iniciada todavía.
+2. Elegir fecha/hora de apertura y final (60 días naturales globales) y de eliminación (30 días naturales posteriores al final), con zona Europe/Madrid y fechas explícitas visibles antes del alta. No hay cuenta atrás iniciada todavía.
 3. Confirmar las entidades contractuales, acuerdos de tratamiento, subencargados, países y garantías del alojamiento Sites, Supabase, Brevo y el buzón Gmail. El DPA de Supabase se integra en su contrato según el documento publicado; guardar la evidencia aplicable a la cuenta. No firmar contratos adicionales en nombre del titular sin autorización.
 4. Obtener los plazos reales de logs SMTP, Auth, alojamiento y copias de seguridad y las opciones de borrado. No prometer un borrado instantáneo de copias fuera del control de Brisa. Evaluar si el buzón de soporte actual ofrece garantías contractuales apropiadas; una dirección exclusiva ayuda a organizar, no resuelve por sí sola el encargo.
 

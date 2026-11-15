@@ -1,6 +1,6 @@
 # Correo y apertura · 15-11-2026
 
-**Actualización v0.9:** el titular ya configuró SMTP Brevo y confirmó recepción y cambio de contraseña. El servidor marca `smtp_ready=true`. Ya hay declaración de edad 18+ validada y registrada en servidor. Documentos 0.9.0-borrador y plan aprobado de 20 días + 30 para exportar. El registro sigue cerrado. El resto de esta página conserva las instrucciones de instalación; para estado y pendientes actuales ver [apertura y cierre](lanzamiento-mvp.md).
+**Actualización v0.9:** el titular ya configuró SMTP Brevo y confirmó recepción y cambio de contraseña. El servidor marca `smtp_ready=true`. Ya hay declaración de edad 18+ validada y registrada en servidor. Documentos 0.9.1-borrador y plan aprobado de 60 días + 30 para exportar. El registro sigue cerrado. El resto de esta página conserva las instrucciones de instalación; para estado y pendientes actuales ver [apertura y cierre](lanzamiento-mvp.md).
 
 ## Qué está hecho
 

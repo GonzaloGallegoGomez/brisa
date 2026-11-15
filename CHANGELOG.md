@@ -1,5 +1,11 @@
 # Cambios
 
+## 0.9.1 — 2026-11-15
+
+- Prueba ampliada a 60 días globales, manteniendo 30 días para exportar.
+- Fechas previstas Europe/Madrid: 16-11-2026, 15-01-2027 y 14-02-2027; registro cerrado y sin borrado automatizado.
+- Textos y configuración de servidor alineados con el nuevo periodo.
+
 ## 0.9.0 — 2026-11-15
 
 - Condiciones, privacidad, aviso y almacenamiento adaptados a la prueba gratuita 18+, 20 días globales y 30 para exportar, sin conversión automática a pago.
