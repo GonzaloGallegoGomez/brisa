@@ -1,5 +1,15 @@
 # Cambios
 
+## 0.4.0 — 2026-11-15
+
+- Centro legal y cuatro documentos fechados de borrador para España.
+- Identificación del responsable y correo facilitados por el propietario.
+- Vista previa del paso legal: lectura sin aceptar y casilla expresa de condiciones, sin consentimiento general de privacidad.
+- Registro sin activar; no se recogen credenciales ni se guardan aceptaciones ficticias.
+- Enlaces permanentes desde el calendario e impresión desde el navegador.
+- Fuentes del sistema para eliminar la carga de Google Fonts.
+- Pruebas de revisión expresa, enlaces, alcance, ausencia de renuncias y guardado de datos.
+
 ## 0.3.0 — 2026-11-15
 
 - Rutinas cada 1, 2, 3 o hasta 52 semanas, con semana de referencia y vista previa.
