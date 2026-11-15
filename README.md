@@ -1,4 +1,4 @@
-# Brisa · v0.2.0
+# Brisa · v0.3.0
 
 Planificación personal en español. Web estática sin dependencias, con datos guardados en el navegador. Repositorio: https://github.com/GonzaloGallegoGomez/brisa
 
@@ -12,8 +12,18 @@ Calendario vacío y cinco tarjetas de tutorial, una a una, con botón para cerra
 
 ## Dos formas de añadir
 
-- **Horario fijo:** clases, trabajo y otras rutinas por días de la semana; examen con fecha, hora, duración y horas totales de preparación; descanso diario.
+- **Horario fijo:** clases, trabajo, transporte y otras rutinas por días de la semana; examen con fecha, hora, duración y horas totales de preparación; descanso diario.
 - **Horario nuevo:** evento social, sesión de gimnasio u otro plan para una fecha concreta.
+
+## Repetición, horas y ajustes
+
+En una rutina fija, elige los días y la frecuencia: cada semana, cada dos semanas (una sí y una no), cada tres o un intervalo de 1 a 52 semanas. Elige cualquier día de la primera semana activa como referencia: se normaliza al lunes. El resumen muestra las tres primeras semanas activas. No hay fecha de fin de rutina. Las rutinas anteriores a v0.3 siguen siendo semanales.
+
+El cálculo usa semanas de calendario y no milisegundos locales: no cambia por horario de verano o al pasar de año. Disponibilidad de estudio, exportación de la semana y detección de conflictos usan la misma regla. Dos ciclos de semanas alternas pueden compartir una hora si no coinciden en fechas reales.
+
+Los campos de hora usan un selector propio con horas 00–23, minutos rápidos y minuto exacto 00–59. También se puede escribir HH:MM. Cancelar no modifica el valor. No depende de los menús nativos del sistema operativo.
+
+En Ajustes se puede guardar nombre o apodo (hasta 40 caracteres) y cinco paletas: verde, azul, anaranjado, violeta y rosa. El tema se aplica a la interfaz y al selector horario. Saludo con hora local del dispositivo: buenos días de 06:00 a 11:59, buenas tardes de 12:00 a 19:59, buenas noches el resto; se actualiza al volver a la página. Ajustes incluidos en la copia JSON. No se crean cuentas.
 
 ## Planificación de exámenes
 
@@ -34,13 +44,15 @@ Asistente por reglas para añadir planes con hora y fecha, sueño y deshacer dur
 
 No incluye modelo de IA, cuenta, backend, sincronización entre dispositivos ni notificaciones con la app cerrada. Datos y tutorial por navegador y origen; borrar el almacenamiento o usar otro dispositivo puede reiniciar la primera visita. Descarga copias periódicas. El calendario visible cubre 08:00–22:00: compromisos fuera de esa franja aparecen en el listado, y el sueño en el pie. Eventos que cruzan medianoche necesitan dividirse. Sueño uniforme por día, sin promedio semanal, traslados ni pausas automáticas. El reparto es heurístico, no garantiza un óptimo global. Objetivos imposibles muestran las horas pendientes.
 
-El código no se conecta a servicios externos ni almacena claves. Los tipos y fechas de las copias se validan. Una importación sustituye el horario local; se puede deshacer en la sesión.
+La aplicación no usa un backend ni almacena claves. La tipografía se carga desde Google Fonts; revisar o autoalojar las fuentes antes de abrir el servicio a terceros. Los tipos y fechas de las copias se validan. Una importación sustituye el horario local; se puede deshacer en la sesión.
 
 ## Próximas versiones
 
 - Acceso por correo o Google y base de datos con aislamiento por usuario, tutorial guardado por cuenta y sincronización. Aún no implementado; ver [opciones de cuentas gratuitas](docs/cuentas-gratuitas.md).
 - Registro de sesiones realmente realizadas, edición de objetivos, preferencias de estudio, pausas y traslados.
 - Modelo de IA en servidor para convertir lenguaje libre en propuestas estructuradas y validadas.
+
+Para futuros usuarios en España/UE, ver [consideraciones legales](docs/privacidad-y-cuentas.md). No es una política de privacidad lista para publicar.
 
 ## Validación
 

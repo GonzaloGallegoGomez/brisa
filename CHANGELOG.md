@@ -1,5 +1,15 @@
 # Cambios
 
+## 0.3.0 — 2026-11-15
+
+- Rutinas cada 1, 2, 3 o hasta 52 semanas, con semana de referencia y vista previa.
+- Recurrencias aplicadas a disponibilidad de estudio, calendario y conflictos.
+- Ejemplo de transporte en Horario fijo.
+- Selector de hora propio, integrado con la paleta, con minuto exacto.
+- Ajustes: cinco paletas, nombre o apodo y saludo según la hora local.
+- Preferencias persistentes e incluidas en las copias. Cuentas sin activar.
+- Pruebas de recurrencias, cambios de hora, conflictos por ciclos, preferencias y selector.
+
 ## 0.2.0 — 2026-11-15
 
 - Tutorial secuencial de primera visita, recuperable desde Ver tutorial.
