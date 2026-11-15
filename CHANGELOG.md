@@ -1,5 +1,15 @@
 # Cambios
 
+## 0.6.0 — 2026-11-15
+
+- Rediseño expresivo con tarjetas de color, degradados suaves, progreso circular y barras de objetivos.
+- Menos texto inicial: ayudas, objetivos, copias y opciones avanzadas desplegables.
+- Acceso directo al siguiente bloque y filtros de agenda sin modificar el horario.
+- Respuesta breve a clics y transiciones de vistas, diálogos y desplegables.
+- Interruptor de animaciones y respeto por movimiento reducido del sistema.
+- Validación accesible de campos dentro de secciones cerradas.
+- Se conservan horarios, progreso, paletas y flujos de planificación.
+
 ## 0.5.0 — 2026-11-15
 
 - Vista Hoy inicial y lista semanal alternativa para móvil.

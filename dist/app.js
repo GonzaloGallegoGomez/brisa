@@ -6,6 +6,7 @@ const fmt=h=>`${String(Math.floor(h)).padStart(2,'0')}:${String(Math.round(h%1*6
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const STORAGE='brisa-v2',TOUR_KEY='brisa-tutorial-v1';
 let today=iso(new Date()),week=monday(today),undo=null,result,mode='fixed',tourStep=0,storageAvailable=true;
+let agendaFilter='all',dailyItems=[],currentNext=null;
 let currentView='today',editing=null,pendingProposal=null,currentSession=null,revision=0;
 const initial={version:3,history:[],progress:[],pins:[],skips:[],studyPrefs:Planner.defaults(),sleep:{bed:'23:00',hours:8},tasks:[],fixed:[],social:[],study:[],tutorialDone:false,preferences:{name:'',theme:'green'}};
 function readStorage(key){try{return localStorage.getItem(key)}catch{storageAvailable=false;return null}}
@@ -25,7 +26,7 @@ function updateFields(){
  $('title').placeholder=isTask?'Ej.: Examen de matemáticas':kind==='social'?'Ej.: Gimnasio o cena con amigos':'Ej.: Clases, trabajo o transporte';
  $('formError').textContent='';updateRepeatPreview();
 }
-function setMode(next){mode=next;$('tabFixed').setAttribute('aria-pressed',String(mode==='fixed'));$('tabNew').setAttribute('aria-pressed',String(mode==='new'));$('kind').innerHTML=mode==='fixed'?'<option value="fixed">Clases, trabajo, transporte o rutina semanal</option><option value="task">Examen y horas de estudio</option><option value="sleep">Horas de sueño</option>':'<option value="social">Evento social, gimnasio o plan puntual</option>';$('kind').value=mode==='fixed'?'fixed':'social';$('modeHint').textContent=mode==='fixed'?'Lo que marca tu ritmo: rutinas, preparación de exámenes y descanso.':'Algo para un día concreto. Buscaremos hueco sin recortar tu estudio.';updateFields()}
+function setMode(next){mode=next;$('tabFixed').setAttribute('aria-pressed',String(mode==='fixed'));$('tabNew').setAttribute('aria-pressed',String(mode==='new'));$('kind').innerHTML=mode==='fixed'?'<option value="fixed">Clases, trabajo, transporte o rutina semanal</option><option value="task">Examen y horas de estudio</option><option value="sleep">Horas de sueño</option>':'<option value="social">Evento social, gimnasio o plan puntual</option>';$('kind').value=mode==='fixed'?'fixed':'social';$('modeHint').textContent=mode==='fixed'?'Tu base semanal.':'Un hueco para tus planes.';updateFields()}
 function openEntry(next='fixed'){
  if($('tour').open)return;
  $('title').value='';$('due').value=addDays(today,20);$('due').min=today;$('due').max=addDays(today,365);$('eventDate').value=week>today?week:today;$('eventDate').min=today;
@@ -60,11 +61,11 @@ $('export').onclick=()=>{
  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Brisa//Plan//ES'];result.events.forEach((e,i)=>lines.push('BEGIN:VEVENT','UID:'+e.id+'-'+e.date+'-'+i+'@brisa','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+Z/,'Z'),'DTSTART:'+stamp(e.date,e.start),'DTEND:'+stamp(e.date,e.end),'SUMMARY:'+escapeICS(e.title),'BEGIN:VALARM','TRIGGER:-PT30M','ACTION:DISPLAY','DESCRIPTION:Tu siguiente paso está cerca. Tómate un momento para prepararte.','END:VALARM','END:VEVENT'));lines.push('END:VCALENDAR');download(lines.join('\r\n'),'text/calendar','brisa-semana.ics');
 };
 const tourSteps=[
- ['✳','Bienvenido a tu espacio','Conoce la vista Hoy, tus horarios y el estudio real con cinco explicaciones cortas. Cierra cada tarjeta para pasar a la siguiente. Al terminar podrás añadir tu primer horario.','Sin prisas. Aquí el estudio, el descanso y tu vida tienen su sitio.'],
- ['▦','Primero, lo que ya tiene su sitio','En Horario fijo puedes añadir tus clases, tu trabajo, el sueño y la preparación de tus exámenes. Las rutinas, incluido el transporte, se repiten cada una, dos, tres o las semanas que elijas.','Ejemplo: clases de lunes a viernes, de 09:00 a 14:00.'],
- ['◷','Un examen, un plan repartido','Introduce la fecha y hora del examen y las horas totales que quieres estudiar. Brisa las distribuye entre los días anteriores, incluso si faltan varias semanas.','Ejemplo: un examen dentro de 20 días y 20 h de estudio → preparación repartida según tus huecos.'],
- ['❋','También hay espacio para tus planes','En Horario nuevo añade una cena, una sesión de gimnasio o cualquier evento puntual. El estudio se recoloca antes de sus fechas; si no cabe, te lo diremos sin cambiar el plan.','El asistente también entiende: «Cena el viernes de 20:00 a 22:00».'],
- ['☾','Tu ritmo queda guardado','Pulsa un bloque para editarlo o registrar lo estudiado. Usa Hoy o Semana y elige pausas, días libres y tu franja preferida en Mi forma de estudiar. Tus cambios se guardan automáticamente en este navegador. Este tutorial no volverá a salir al terminarlo.','Aún no hay cuentas ni guardado entre dispositivos. Puedes descargar una copia y volver a ver este tutorial cuando quieras.']
+ ['✳','Tu día, a tu ritmo','En Hoy tienes tu siguiente bloque. Pulsa para abrirlo.','Cambia a Semana cuando quieras.'],
+ ['▦','Tu base semanal','Añade clases, trabajo, transporte o sueño en Horario fijo.','Elige qué semanas se repite.'],
+ ['◷','Un examen, un plan','Indica la fecha y las horas totales. Brisa las reparte.','Tú marcas lo que has estudiado.'],
+ ['❋','Espacio para tus planes','Añade una cena o una sesión de gimnasio.','Revisa los cambios antes de aplicar.'],
+ ['☾','Hazlo tuyo','Elige colores, pausas y días libres en Ajustes.','Tu horario se guarda en este navegador.']
 ];
 function showTourStep(){const [symbol,title,text,example]=tourSteps[tourStep];$('tourCount').textContent=`${tourStep+1} DE ${tourSteps.length}`;$('tourSymbol').textContent=symbol;$('tourTitle').textContent=title;$('tourText').textContent=text;$('tourExample').textContent=example;$('tourDots').innerHTML=tourSteps.map((_,i)=>`<i class="${i===tourStep?'active':''}"></i>`).join('');$('tourNext').textContent=tourStep===tourSteps.length-1?'Empezar mi calendario':'Entendido, siguiente';$('tourNextClose').setAttribute('aria-label',tourStep===tourSteps.length-1?'Terminar tutorial':'Cerrar esta explicación y ver la siguiente');}
 function startTour(){if($('modal').open||$('sleepModal').open||$('settingsModal').open)return;tourStep=0;showTourStep();$('tour').showModal()}
@@ -77,14 +78,14 @@ window.addEventListener('focus',()=>{const current=iso(new Date());if(current!==
 function greeting(date,name){const h=date.getHours(),salute=h>=6&&h<12?'Buenos días':h>=12&&h<20?'Buenas tardes':'Buenas noches';return salute+(name?', '+name:'')+'.'}
 function applyPreferences(){
  const preferences=state.preferences||{name:'',theme:'green'};
- document.documentElement.setAttribute('data-theme',preferences.theme);
+ document.documentElement.setAttribute('data-theme',preferences.theme);document.documentElement.setAttribute('data-motion',preferences.motion===false?'off':'on');
  $('greeting').textContent=greeting(new Date(),preferences.name);
  $('userName').textContent=preferences.name||'Tu espacio';$('userAvatar').textContent=preferences.name?Array.from(preferences.name)[0].toUpperCase():'T';
 }
 function setupPreferences(){
- $('settingsNav').onclick=()=>{if($('tour').open)return;$('preferredName').value=state.preferences.name;document.querySelectorAll('input[name="theme"]').forEach(r=>{r.checked=r.value===state.preferences.theme});$('settingsError').textContent='';$('settingsModal').showModal()};
+ $('settingsNav').onclick=()=>{if($('tour').open)return;$('preferredName').value=state.preferences.name;$('softMotion').checked=state.preferences.motion!==false;document.querySelectorAll('input[name="theme"]').forEach(r=>{r.checked=r.value===state.preferences.theme});$('settingsError').textContent='';$('settingsModal').showModal()};
  $('closeSettings').onclick=()=>$('settingsModal').close();
- $('settingsForm').onsubmit=e=>{e.preventDefault();const name=$('preferredName').value.trim(),theme=document.querySelector('input[name="theme"]:checked')?.value;if(name.length>40||!['green','blue','orange','violet','rose'].includes(theme)){$('settingsError').textContent='Elige una paleta y un nombre de hasta 40 caracteres.';return}state.preferences={name,theme};writeStorage(STORAGE,JSON.stringify(state));applyPreferences();$('settingsModal').close();toast('Tu espacio, a tu manera. Ajustes guardados.');};
+ $('settingsForm').onsubmit=e=>{e.preventDefault();const name=$('preferredName').value.trim(),theme=document.querySelector('input[name="theme"]:checked')?.value;if(name.length>40||!['green','blue','orange','violet','rose'].includes(theme)){$('settingsError').textContent='Elige una paleta y un nombre de hasta 40 caracteres.';return}state.preferences={name,theme,motion:$('softMotion').checked};writeStorage(STORAGE,JSON.stringify(state));applyPreferences();$('settingsModal').close();toast('Estilo guardado.');};
 }
 function updateRepeatPreview(){
  const custom=$('repeatWeeks').value==='custom';$('customRepeatLabel').hidden=!custom;$('customRepeatWeeks').disabled=!custom||$('kind').value!=='fixed';$('customRepeatWeeks').required=custom&&$('kind').value==='fixed';
@@ -106,14 +107,14 @@ function save(){revision++;storePlan();render()}
 function clockLabel(e){return new Date(e.date+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'short'})+' · '+fmt(e.start)+'–'+fmt(e.end)}
 function hours(n){return Math.round(n*100)/100+' h'}
 function eventButton(e,compact=false){
- const label=e.type==='done'?'Estudio registrado':e.type==='rest'||e.type==='break'?'Descanso':e.type==='exam'?'Examen':e.type==='study'?'Estudio':e.type==='fixed'?'Rutina':'Plan personal';
- return `<button type="button" class="agendaItem ${esc(e.type)}" data-event-key="${esc(e.key)}" aria-label="${esc(label+': '+e.title+', '+clockLabel(e))}"><span class="agendaTime">${fmt(e.start)}<small>${fmt(e.end)}</small></span><span><strong>${esc(e.title)}</strong><small>${label}${e.type==='done'?' · '+e.actualMinutes+' min reales':''}${e.pinned?' · bloque fijado por ti':''}</small></span><span aria-hidden="true">›</span></button>`;
+ const label=e.type==='done'?'Hecho':e.type==='rest'||e.type==='break'?'Descanso':e.type==='exam'?'Examen':e.type==='study'?'Estudio':e.type==='fixed'?'Rutina':'Plan personal';
+ return `<button type="button" class="agendaItem ${esc(e.type)}" data-event-key="${esc(e.key)}" aria-label="${esc(label+': '+e.title+', '+clockLabel(e))}"><span class="agendaTime">${fmt(e.start)}<small>${fmt(e.end)}</small></span><span><strong>${esc(e.title)}</strong><small>${label}${e.type==='done'?' · '+e.actualMinutes+' min':''}${e.pinned?' · fijado':''}</small></span><span aria-hidden="true">›</span></button>`;
 }
 function render(){
  applyPreferences();result=calculate();
  $('todayLabel').textContent=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
- $('focus').textContent=hours(result.studyHours)+' esta semana';$('sleepStat').textContent=state.sleep.hours+' h cada noche';$('bedStat').textContent='A dormir a las '+state.sleep.bed;
- $('socialStat').textContent=state.social.filter(e=>e.date>=week&&e.date<addDays(week,7)).length+' planes personales';
+ $('focus').textContent=hours(result.studyHours);$('sleepStat').textContent=state.sleep.hours+' h';$('bedStat').textContent='Desde las '+state.sleep.bed;
+ $('socialStat').textContent=state.social.filter(e=>e.date>=week&&e.date<addDays(week,7)).length+' planes';
  $('range').textContent=new Date(week+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'long'})+' — '+new Date(addDays(week,6)+'T12:00:00').toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
  $('sleepFooter').textContent=state.sleep.bed+' — '+fmt((num(state.sleep.bed)+state.sleep.hours)%24);
  const visible=result.events.filter(e=>e.type!=='break'&&e.type!=='rest');
@@ -125,28 +126,30 @@ function render(){
   html+=`<button type="button" class="event ${esc(e.type)}" data-event-key="${esc(e.key)}" style="top:${(start-axisStart)/span*100}%;height:${Math.max(.6,(end-start)/span*100)}%" aria-label="${esc(e.title+', '+clockLabel(e))}" title="${esc(e.title)} · ${fmt(e.start)}–${fmt(e.end)}"><b>${rest?'':esc(e.title)}</b><small>${rest?'':fmt(e.start)+'–'+fmt(e.end)}</small></button>`;
  }html+='</div>'}$('calendar').innerHTML=html;
  $('weekAgenda').innerHTML=Array.from({length:7},(_,i)=>{const date=addDays(week,i);return '<details><summary>'+new Date(date+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'short'})+'</summary>'+result.events.filter(e=>e.date===date&&e.type!=='break').map(e=>eventButton(e)).join('')+'</details>'}).join('');
- $('upcoming').innerHTML=[...state.tasks].sort((a,b)=>a.due.localeCompare(b.due)).slice(0,3).map(t=>{const allocated=result.allStudy.filter(e=>e.id===t.id).reduce((n,e)=>n+e.end-e.start,0),done=Planner.completedMinutes(state,t.id)/60;return `<div class="deadline"><div class="datebox">${new Date(t.due+'T12:00:00').toLocaleDateString('es',{month:'short'})}<strong>${Number(t.due.slice(-2))}</strong></div><div><p>${esc(t.title)}</p><small>${esc(t.dueTime)} · ${t.due<today?'Revisa esta fecha':'Un paso a la vez'}</small><small class="taskPlan">${hours(done)} hechas · ${hours(allocated)} por delante</small></div></div>`}).join('')||'<p class="formHint">Añade un examen para preparar tu plan.</p>';
- const warnings=[];if(result.pending.length)warnings.push('Hay estudio sin hueco: '+result.pending.map(p=>p.title+' ('+hours(p.hours)+')').join(', ')+'. Edita el objetivo o tu disponibilidad para revisar alternativas.');
- if(result.invalidPins.length)warnings.push('Hay bloques manuales que ya no encajan. Pulsa el objetivo para ajustar el plan.');
+ $('upcoming').innerHTML=[...state.tasks].sort((a,b)=>a.due.localeCompare(b.due)).slice(0,3).map(t=>{const allocated=result.allStudy.filter(e=>e.id===t.id).reduce((n,e)=>n+e.end-e.start,0),done=Planner.completedMinutes(state,t.id)/60;return `<div class="deadline"><div class="datebox">${new Date(t.due+'T12:00:00').toLocaleDateString('es',{month:'short'})}<strong>${Number(t.due.slice(-2))}</strong></div><div><p>${esc(t.title)}</p><small>${esc(t.dueTime)} · ${t.due<today?'Revisa esta fecha':'Un paso a la vez'}</small><small class="taskPlan">${hours(done)} / ${hours(t.hours)}</small></div></div>`}).join('')||'<p class="formHint">Tu próximo objetivo, aquí.</p>';
+ const warnings=[];if(result.pending.length)warnings.push('Sin hueco: '+result.pending.map(p=>p.title+' ('+hours(p.hours)+')').join(', ')+'. Revisa tu disponibilidad.');
+ if(result.invalidPins.length)warnings.push('Revisa los bloques fijados: hay un conflicto.');
  if(!storageAvailable)warnings.push('El navegador no permite guardar. Descarga una copia antes de salir.');$('warning').textContent=warnings.join(' ');$('resolveCapacity').hidden=!result.pending.length&&!result.invalidPins.length;
+ $('goalCount').textContent=state.tasks.length+state.fixed.length+state.social.length;
  $('emptyState').hidden=state.tasks.length+state.fixed.length+state.social.length>0;
  $('items').innerHTML=['tasks','fixed','social'].flatMap(k=>state[k].map(e=>{
- let info;if(k==='tasks'){const future=result.allStudy.filter(x=>x.id===e.id).reduce((n,x)=>n+x.end-x.start,0);info=e.due+' · '+hours(Planner.completedMinutes(state,e.id)/60)+' hechas · '+hours(future)+' planificadas de '+hours(e.hours);}else info=k==='fixed'?'Cada '+(e.intervalWeeks||1)+' semana(s) · '+e.days.map(d=>['D','L','M','X','J','V','S'][d]).join(', ')+' · '+fmt(e.start)+'–'+fmt(e.end):e.date+' · '+fmt(e.start)+'–'+fmt(e.end);
- return `<div class="item"><div>${esc(e.title)}<small>${esc(info)}</small></div><div class="itemActions"><button data-edit-kind="${k}" data-id="${esc(e.id)}">Editar</button></div></div>`})).join('');
+ let info;if(k==='tasks'){const future=result.allStudy.filter(x=>x.id===e.id).reduce((n,x)=>n+x.end-x.start,0);info=e.due+' · '+hours(Planner.completedMinutes(state,e.id)/60)+' / '+hours(e.hours);}else info=k==='fixed'?((e.intervalWeeks||1)===1?'Semanal':(e.intervalWeeks||1)+' semanas')+' · '+e.days.map(d=>['D','L','M','X','J','V','S'][d]).join(', ')+' · '+fmt(e.start)+'–'+fmt(e.end):e.date+' · '+fmt(e.start)+'–'+fmt(e.end);
+ return `<div class="item ${k}"><div>${esc(e.title)}<small>${esc(info)}</small>${k==='tasks'?'<span class="goalTrack" aria-hidden="true"><i style="width:'+Math.min(100,Planner.completedMinutes(state,e.id)/(e.hours*60)*100)+'%"></i></span>':''}</div><div class="itemActions"><button data-edit-kind="${k}" data-id="${esc(e.id)}">Editar</button></div></div>`})).join('');
  $('items').innerHTML+=result.invalidPins.map(e=>'<div class="item"><div>'+esc(e.title)+'<small>Bloque manual sin hueco · '+clockLabel(e)+'</small></div><button data-invalid-pin="'+esc(e.key)+'">Ajustar bloque</button></div>').join('');
  const daily=Planner.plan(state,today,1),hour=new Date().getHours()+new Date().getMinutes()/60;
  const dayEvents=daily.events.filter(e=>e.type!=='break').sort((a,b)=>a.start-b.start),next=dayEvents.find(e=>e.type!=='done'&&e.end>hour);
- $('nextTitle').textContent=next?next.title:'Hoy también hay espacio para ti.';$('nextDescription').textContent=next?(next.start<=hour?'Ahora · ':'Después · ')+fmt(next.start)+'–'+fmt(next.end):'No hay más bloques previstos para hoy. Puedes descansar o revisar tu semana.';
+ currentNext=next||null;$('nextTitle').textContent=next?next.title:'Día despejado.';$('nextDescription').textContent=next?(next.start<=hour?'Ahora · ':'Después · ')+fmt(next.start)+'–'+fmt(next.end):'Espacio para ti.';
  const doneToday=state.progress.filter(p=>p.date===today).reduce((n,p)=>n+p.actualMinutes,0);
- $('todayStats').textContent=doneToday+' min de estudio registrados · '+Math.round(daily.studyHours*60)+' min de estudio por delante';$('todayDate').textContent=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
- $('todayAgenda').innerHTML=dayEvents.map(e=>eventButton(e)).join('')||'<p class="gentle">Tu día está despejado.</p>';
+ $('todayStats').innerHTML='<span><strong>'+doneToday+'</strong> min hechos</span><span><strong>'+Math.round(daily.studyHours*60)+'</strong> por delante</span>';const target=doneToday+Math.round(daily.studyHours*60),percent=target?Math.min(100,Math.round(doneToday/target*100)):0;$('dailyRing').setAttribute('style','--progress:'+percent+'%');$('dailyRing').setAttribute('aria-label',doneToday+' minutos de estudio hechos; '+Math.round(daily.studyHours*60)+' minutos por delante hoy');$('ringMinutes').textContent=doneToday;$('openNext').textContent=next?'Abrir bloque ↗':'Añadir plan ＋';$('todayDate').textContent=new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+ dailyItems=dayEvents;renderAgenda();
  const occupied=dayEvents.filter(e=>e.end>hour).map(e=>({start:Math.max(hour,e.start),end:e.end})).sort((a,b)=>a.start-b.start);let cursor=Math.max(hour,8),free=[];const until=Math.min(22,num(state.sleep.bed)>12?num(state.sleep.bed):24);
  for(const e of occupied){if(e.start>cursor&&cursor<until)free.push([cursor,Math.min(e.start,until)]);cursor=Math.max(cursor,e.end)}if(cursor<until)free.push([cursor,until]);free=free.filter(([a,b])=>b-a>=.5);
- $('freeTime').textContent=free.length?'Huecos sin compromisos de al menos 30 min: '+free.map(([a,b])=>fmt(a)+'–'+fmt(b)).join(' · ')+'. Estos huecos también pueden incluir tus márgenes de descanso.':'No necesitas llenar cada minuto. Tu descanso también cuenta.';
+ $('freeTime').textContent=free.length?free.map(([a,b])=>fmt(a)+'–'+fmt(b)).join(' · ')+' · Incluyen pausas y márgenes.':'No necesitas llenar cada minuto.';
  $('reviewPast').hidden=!daily.unreviewed.length;$('pastSessions').innerHTML=daily.unreviewed.slice(-8).map(e=>`<button class="pastReview" data-past-key="${esc(Planner.sessionKey(e))}">${esc(e.title)} · ${clockLabel(e)} · Registrar</button>`).join('');
- $('todayPanel').hidden=currentView!=='today';$('weekPanel').hidden=currentView!=='week';$('todayView').setAttribute('aria-pressed',String(currentView==='today'));$('weekView').setAttribute('aria-pressed',String(currentView==='week'));$('undoChange').disabled=!undo;
+ $('todayPanel').hidden=currentView!=='today';$('weekPanel').hidden=currentView!=='week';$('todayNav').setAttribute('aria-current',currentView==='today'?'page':'false');$('weekNav').setAttribute('aria-current',currentView==='week'?'page':'false');$('todayView').setAttribute('aria-pressed',String(currentView==='today'));$('weekView').setAttribute('aria-pressed',String(currentView==='week'));$('undoChange').disabled=!undo;
 }
 function showView(view){currentView=view;render()}
+function renderAgenda(){const list=dailyItems.filter(e=>agendaFilter==='all'||agendaFilter==='study'&&['study','done'].includes(e.type)||agendaFilter==='life'&&!['study','done'].includes(e.type));$('todayAgenda').innerHTML=list.map(e=>eventButton(e)).join('')||'<p class="agendaEmpty"><span aria-hidden="true">✧</span> Sin bloques aquí.</p>';document.querySelectorAll('[data-agenda-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.agendaFilter===agendaFilter)));}
 function eventError(e,kind,base=state){
  if(!Number.isFinite(e.start)||!Number.isFinite(e.end)||e.start<0||e.end>24||e.end<=e.start)return 'Revisa el horario: debe terminar después de empezar, en el mismo día.';
  if(kind==='social'&&!validDate(e.date))return 'Elige una fecha válida.';
@@ -165,10 +168,10 @@ function drawProposal(){
  q.hardSleep=[...q.next.fixed,...q.next.social.filter(e=>e.date>=today),...q.next.tasks.filter(t=>t.due>=today&&(t.duration??1)>0).map(t=>({start:num(t.dueTime),end:num(t.dueTime)+(t.duration??1)}))].some(e=>Planner.sleepConflict(q.next.sleep,e.start,e.end));
  q.blocked=increased.length>0||q.plan.invalidPins.length>0||q.hardSleep;
  $('proposalDescription').textContent=q.description;
- $('proposalStatus').textContent=q.hardSleep?'Hay compromisos que coinciden con el descanso. Ajusta las horas antes de aplicar.':q.plan.invalidPins.length?'Hay un bloque fijado que coincide con tus compromisos o preferencias. Ajústalo antes de guardar.':increased.length?'Este cambio deja estudio sin hueco. Prueba otra disponibilidad o ajusta la propuesta.':q.plan.pending.length?'Puedes guardar este objetivo o progreso, pero quedan horas sin hueco. Se mostrarán como pendientes.':'Las horas de tus objetivos encajan antes de sus fechas. Nada se guarda hasta que apliques la propuesta.';
- $('proposalGoals').innerHTML=q.next.tasks.map(t=>{const done=Planner.completedMinutes(q.next,t.id)/60,future=q.plan.allStudy.filter(e=>e.id===t.id).reduce((n,e)=>n+e.end-e.start,0),missing=q.plan.pending.find(e=>e.id===t.id)?.hours||0;return `<div class="goalReview"><strong>${esc(t.title)}</strong><span>${hours(done)} hechas + ${hours(future)} planificadas + ${hours(missing)} sin hueco = ${hours(t.hours)}</span></div>`}).join('')||'<p class="formHint">No hay objetivos de estudio afectados.</p>';
+ $('proposalStatus').textContent=q.hardSleep?'Hay compromisos que coinciden con el descanso. Ajusta las horas antes de aplicar.':q.plan.invalidPins.length?'Hay un bloque fijado que coincide con tus compromisos o preferencias. Ajústalo antes de guardar.':increased.length?'Este cambio deja estudio sin hueco. Prueba otra disponibilidad o ajusta la propuesta.':q.plan.pending.length?'Quedan horas sin hueco. Seguirán pendientes si guardas.':'Todo encaja. Tú decides si guardarlo.';
+ $('proposalGoals').innerHTML=q.next.tasks.map(t=>{const done=Planner.completedMinutes(q.next,t.id)/60,future=q.plan.allStudy.filter(e=>e.id===t.id).reduce((n,e)=>n+e.end-e.start,0),missing=q.plan.pending.find(e=>e.id===t.id)?.hours||0;return `<div class="goalReview"><strong>${esc(t.title)}</strong><span><i>${hours(done)} hechas</i><i>${hours(future)} previstas</i>${missing?'<i class="shortage">'+hours(missing)+' sin hueco</i>':''}</span></div>`}).join('')||'<p class="formHint">No hay objetivos de estudio afectados.</p>';
  const diff=Planner.changes(q.base,q.plan);$('proposalChangesTitle').textContent=diff.removed.length+' bloques cambian · '+diff.added.length+' nuevos huecos';const list=events=>events.slice(0,30).map(e=>`<p>${esc(e.title)}<small>${clockLabel(e)}</small></p>`).join('')+(events.length>30?'<p>Y '+(events.length-30)+' bloques más.</p>':'');$('proposalBefore').innerHTML=list(diff.removed)||'<p>Sin cambios.</p>';$('proposalAfter').innerHTML=list(diff.added)||'<p>Sin cambios.</p>';
- $('adjustProposal').disabled=!q.source;$('proposalAlternatives').hidden=!q.plan.pending.length;$('applyProposal').disabled=q.blocked;$('applyProposal').textContent=q.plan.pending.length&&!q.blocked?'Guardar con horas pendientes':'Aplicar propuesta';
+ $('adjustProposal').disabled=!q.source;$('proposalAlternatives').hidden=!q.plan.pending.length;$('applyProposal').disabled=q.blocked;$('applyProposal').textContent=q.plan.pending.length&&!q.blocked?'Guardar con horas pendientes':'Aplicar cambios';
  q.signature=JSON.stringify([q.plan.allStudy,q.plan.pending,q.plan.invalidPins]);
 }
 function cancelProposal(adjust=false){const q=pendingProposal;pendingProposal=null;$('proposalModal').close();if(adjust&&q?.source)$(q.source).showModal()}
@@ -234,6 +237,9 @@ function openStudyPrefs(){if($('tour').open)return;const p=state.studyPrefs;
  document.querySelectorAll('input[name="daysOff"]').forEach(c=>{c.checked=p.daysOff.includes(Number(c.value))});$('lunchEnabled').checked=p.lunchEnabled;$('studyPrefsError').textContent='';if($('settingsModal').open)$('settingsModal').close();$('studyPrefsModal').showModal();
 }
 function setupEnhancements(){
+ $('openNext').onclick=()=>{const e=currentNext;if(!e){openEntry('new');return}if(['rest','break'].includes(e.type))openStudyPrefs();else if(e.type==='study'||e.type==='done')openSession(e);else openEdit(e.type==='exam'?'tasks':e.type,e.id,e.date,e.type==='fixed'?'one':'all');};
+ document.querySelectorAll('[data-agenda-filter]').forEach(b=>{b.onclick=()=>{agendaFilter=b.dataset.agendaFilter;renderAgenda()}});
+ $('goalsNav').onclick=()=>{$('goalsDisclosure').open=true;$('details').scrollIntoView({behavior:'smooth'})};
  $('todayNav').onclick=()=>showView('today');$('weekNav').onclick=()=>showView('week');$('todayView').onclick=()=>showView('today');$('weekView').onclick=()=>showView('week');
  $('resolveCapacity').onclick=()=>stageProposal(structuredClone(state),'Revisar alternativas para las horas que no caben.',null);$('quickStudyPrefs').onclick=openStudyPrefs;$('studyPrefsButton').onclick=openStudyPrefs;$('closeStudyPrefs').onclick=()=>$('studyPrefsModal').close();
  $('calendar').onclick=handleEventClick;$('weekAgenda').onclick=handleEventClick;$('todayAgenda').onclick=handleEventClick;

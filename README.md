@@ -1,10 +1,18 @@
-# Brisa · v0.5.0
+# Brisa · v0.6.0
 
 Planificación personal en español, con un calendario tranquilo y progreso de estudio real. HTML, CSS y JavaScript sin dependencias ni claves. Repositorio: https://github.com/GonzaloGallegoGomez/brisa
 
 ## Ejecutar
 
 Con Python 3: `python3 -m http.server 3000 --directory dist` y abrir http://localhost:3000. Con Node 18+: `npm test` y `npm run check`. Para desplegar, servir `dist/` en un alojamiento estático. El manifiesto `.openai/hosting.json` solo está en el repositorio de despliegue Sites, no en GitHub.
+
+## Interfaz más visual
+
+La pantalla principal reduce las explicaciones: tarjeta de siguiente bloque con acceso directo, círculo de minutos reales del día, indicadores compactos, barras de progreso y superficies de color adaptadas a las cinco paletas. Los objetivos y rutinas se despliegan al pulsar su cabecera o desde el menú. Las copias de seguridad están dentro de otra sección desplegable.
+
+La agenda tiene filtros Todo / Estudio / Mi vida. Filtrar no cambia datos ni planificación. «Mis huecos libres», ayudas de formularios y opciones avanzadas de estudio se abren cuando se necesitan. Los campos obligatorios dentro de un desplegable se revelan si hay un error de validación.
+
+Los clics de controles habilitados tienen una respuesta de escala de 180 ms. Diálogos, vistas y desplegables aparecen con transiciones de 160–200 ms, sin animaciones continuas. No se retrasa la ejecución de las acciones. En Ajustes se pueden desactivar las animaciones; la preferencia de movimiento reducido del sistema siempre prevalece. La elección se guarda en el navegador e incluye en la copia JSON.
 
 ## Hoy y semana
 
