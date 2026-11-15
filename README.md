@@ -1,37 +1,47 @@
-# Brisa · v0.1.0
+# Brisa · v0.2.0
 
-MVP web de planificación personal en español. HTML, CSS y JavaScript sin dependencias. Datos de ejemplo al primer inicio; elimina los objetivos y rutinas de ejemplo para comenzar tu plan.
+Planificación personal en español. Web estática sin dependencias, con datos guardados en el navegador. Repositorio: https://github.com/GonzaloGallegoGomez/brisa
 
 ## Ejecutar
 
-Con Python 3: `python3 -m http.server 3000 --directory dist` y abrir http://localhost:3000. Con Node 18+: `npm test` y `npm run check`.
+Con Python 3: `python3 -m http.server 3000 --directory dist` y abrir http://localhost:3000. Con Node 18+: `npm test` y `npm run check`. No requiere instalar paquetes ni claves. Para desplegar, servir `dist/` en un alojamiento estático. `.openai/hosting.json` solo se utiliza en el repositorio de despliegue Sites y se omite en GitHub.
 
-## Incluido
+## Primera visita
 
-- Objetivos con fecha límite y horas de preparación pendientes.
-- Rutinas semanales y planes personales; validación de conflictos.
-- Planificador por fecha límite, sesiones de 30 minutos y máximo 3 horas por objetivo al día; reparto entre días con disponibilidad. No programa en el pasado ni el día del vencimiento. Ventana de estudio 08:00–22:00 dentro de la vigilia.
-- Asistente por reglas para eventos con fecha o día de la semana, horas de sueño y deshacer (durante la sesión). Los días de la semana se refieren a la semana visible.
-- Protección de horas al añadir eventos: rechaza los cambios que reduzcan el estudio programado o incrementen las horas pendientes de la semana afectada.
-- Descanso diario uniforme, navegación por semanas, exportación ICS con aviso 30 minutos antes, copia/restauración JSON.
-- Recordatorios tranquilizadores al abrir la aplicación.
+Calendario vacío y cinco tarjetas de tutorial, una a una, con botón para cerrar y continuar. Escape también avanza una tarjeta. El fondo permanece inactivo hasta terminar. Al completar, se guarda el estado del tutorial y no vuelve a aparecer automáticamente en ese navegador. «Ver tutorial» permite repetirlo. No se borran los horarios anteriores al actualizar: se migran desde v0.1.
 
-## Límites explícitos
+## Dos formas de añadir
 
-No incluye un modelo de IA, cuenta, backend, sincronización, notificaciones push ni avisos mientras la app está cerrada. Los avisos ICS dependen de la aplicación donde se importe el calendario. Almacenamiento local por navegador y origen; descargar copias periódicamente. No almacena claves.
+- **Horario fijo:** clases, trabajo y otras rutinas por días de la semana; examen con fecha, hora, duración y horas totales de preparación; descanso diario.
+- **Horario nuevo:** evento social, sesión de gimnasio u otro plan para una fecha concreta.
 
-El planificador es heurístico, no garantiza un óptimo global. Cada semana se calcula de forma independiente: las horas pendientes no se reparten ni se descuentan automáticamente entre semanas. Actualiza las horas pendientes cuando avances. Eventos que cruzan medianoche requieren división. Descanso idéntico todos los días; aún no admite promedio semanal. No contempla tiempos de desplazamiento ni descansos entre sesiones. Horas fuera de 08:00–22:00 no se muestran en la cuadrícula, pero bloquean disponibilidad. No modificar fechas mediante lenguaje ambiguo: usar YYYY-MM-DD.
+## Planificación de exámenes
+
+El plan se calcula sobre un único horizonte entre hoy y cada fecha de examen (hasta 365 días al crear el objetivo), independientemente de la semana visible. Ejemplo: 20 horas para un examen dentro de 20 días se reparten entre esos días según disponibilidad. No se repite la asignación al navegar por semanas.
+
+- Sesiones en pasos de 30 minutos. Estudio entre 08:00 y 22:00, dentro de la vigilia.
+- Hasta 3 h por objetivo al día y 6 h totales de estudio al día. Prioridad por fecha límite y reparto equilibrado por días.
+- Estudio hasta el día anterior al examen. Fecha y hora del examen visibles en calendario y recordatorios; duración 0 permite registrar una entrega.
+- Rutinas, sueño, eventos nuevos y otros exámenes bloquean disponibilidad. Un examen puede coincidir con una clase (por ejemplo si se realiza durante esa clase), pero no con estudio de otro objetivo.
+- Cuando añades un evento o cambias el sueño, se recalcula el futuro completo. Se rechaza si aumenta el déficit de algún objetivo; nunca se ocultan horas sin hueco.
+- Los bloques ya iniciados se conservan en el historial de planificación. No equivalen a horas de estudio realmente completadas: todavía no hay seguimiento de progreso.
+
+## Otras funciones
+
+Asistente por reglas para añadir planes con hora y fecha, sueño y deshacer durante la sesión. Los nombres de día se refieren a la semana visible. Exportación ICS de la semana con aviso 30 minutos antes (su ejecución depende del calendario importador), copia y restauración JSON, avisos de falta de capacidad y fechas próximas.
+
+## Límites actuales
+
+No incluye modelo de IA, cuenta, backend, sincronización entre dispositivos ni notificaciones con la app cerrada. Datos y tutorial por navegador y origen; borrar el almacenamiento o usar otro dispositivo puede reiniciar la primera visita. Descarga copias periódicas. El calendario visible cubre 08:00–22:00: compromisos fuera de esa franja aparecen en el listado, y el sueño en el pie. Eventos que cruzan medianoche necesitan dividirse. Sueño uniforme por día, sin promedio semanal, traslados ni pausas automáticas. El reparto es heurístico, no garantiza un óptimo global. Objetivos imposibles muestran las horas pendientes.
+
+El código no se conecta a servicios externos ni almacena claves. Los tipos y fechas de las copias se validan. Una importación sustituye el horario local; se puede deshacer en la sesión.
 
 ## Próximas versiones
 
-1. v0.2: modelo de IA en servidor para extraer peticiones estructuradas; validación de restricciones, propuesta de cambios antes de aplicar y pruebas de ambigüedad.
-2. v0.3: planificación continua entre semanas, avance real y horizonte hasta cada examen; traslados, pausas y preferencias por día.
-3. v0.4: cuentas, base de datos, recordatorios push y sincronización de calendarios.
+- Acceso por correo o Google y base de datos con aislamiento por usuario, tutorial guardado por cuenta y sincronización. Aún no implementado; ver [opciones de cuentas gratuitas](docs/cuentas-gratuitas.md).
+- Registro de sesiones realmente realizadas, edición de objetivos, preferencias de estudio, pausas y traslados.
+- Modelo de IA en servidor para convertir lenguaje libre en propuestas estructuradas y validadas.
 
-## Versionado
+## Validación
 
-Versión inicial: v0.1.0. Repositorio: https://github.com/GonzaloGallegoGomez/brisa. El manifiesto privado de Sites no se incluye: este repositorio puede alojarse de forma independiente. No añadir claves al repositorio. Servir `dist/` en cualquier alojamiento estático.
-
-## Verificación
-
-Pruebas de horas asignadas, fechas, conflictos, cena sobre un bloque de estudio, capacidad insuficiente, sueño tras medianoche y objetivos vencidos. Comprobación sintáctica JavaScript. La prueba visual en navegador está pendiente porque este entorno no dispone del controlador de navegador requerido por Sites.
+`npm test`: pruebas del tutorial, modos de formulario, persistencia, migración, examen a 20 días, continuidad entre semanas, reorganización, varios exámenes, fechas, sueño y capacidad insuficiente. Las pruebas de aplicación ejecutan los eventos con un DOM simulado; no sustituyen una prueba visual. `npm run check`: sintaxis JavaScript. QA visual pendiente: falta el controlador de navegador requerido por Sites en el entorno actual.
