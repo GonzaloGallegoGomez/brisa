@@ -1,5 +1,17 @@
 # Cambios
 
+## 0.7.0 — 2026-11-15
+
+- URL y clave publicable del propietario para conectar Supabase.
+- Acceso por email/contraseña a usuarios de prueba creados por el propietario.
+- Guardado por cuenta, tutorial en el payload, aislamiento de caché y migración local explícita.
+- SQL con RLS por auth.uid y guardado mediante revisión esperada.
+- Conflictos entre dispositivos, copias pendientes y recuperación explícita.
+- Página de configuración con SQL descargable y comprobación de instalación.
+- SDK oficial fijado e incluido con licencia.
+- Registro público y apertura del enlace de Sites sin activar.
+- Pruebas simuladas de sincronización y estructura SQL; ejecución/aislamiento real pendientes del propietario.
+
 ## 0.6.1 — 2026-11-15
 
 - El editor de rutinas abre la serie completa por defecto, con periodicidad visible.

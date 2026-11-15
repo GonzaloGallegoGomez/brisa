@@ -4,13 +4,13 @@ const {iso,addDays,num,validDate,validTime}=Planner;
 const monday=s=>addDays(s,-((new Date(s+'T12:00:00').getDay()+6)%7));
 const fmt=h=>`${String(Math.floor(h)).padStart(2,'0')}:${String(Math.round(h%1*60)).padStart(2,'0')}`;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const STORAGE='brisa-v2',TOUR_KEY='brisa-tutorial-v1';
+let STORAGE='brisa-v2',TOUR_KEY='brisa-tutorial-v1';
 let today=iso(new Date()),week=monday(today),undo=null,result,mode='fixed',tourStep=0,storageAvailable=true;
 let agendaFilter='all',dailyItems=[],currentNext=null;
 let currentView='today',editing=null,pendingProposal=null,currentSession=null,revision=0;
 const initial={version:3,history:[],progress:[],pins:[],skips:[],studyPrefs:Planner.defaults(),sleep:{bed:'23:00',hours:8},tasks:[],fixed:[],social:[],study:[],tutorialDone:false,preferences:{name:'',theme:'green'}};
 function readStorage(key){try{return localStorage.getItem(key)}catch{storageAvailable=false;return null}}
-function writeStorage(key,value){try{localStorage.setItem(key,value);return true}catch{storageAvailable=false;return false}}
+function writeStorage(key,value){try{localStorage.setItem(key,value)}catch{storageAvailable=false;return false}if(key===STORAGE&&window.BrisaAccounts?.localChanged)window.BrisaAccounts.localChanged(JSON.parse(value));return true}
 function migrate(s){return Planner.migrate(s)}
 let state;
 try{const saved=readStorage(STORAGE)||readStorage('brisa-v1');state=saved?migrate(JSON.parse(saved)):structuredClone(initial)}catch{state=structuredClone(initial)}
@@ -281,3 +281,17 @@ function deleteRoutine(scope){
  const message=scope==='all'?'Eliminar toda la rutina «'+routine.title+'» de todas las semanas, incluidas sus excepciones.':'Eliminar solo la sesión del '+editing.date+'. Las demás semanas se conservan.';
  stageProposal(next,message,'modal');
 }
+
+// Account adapter: caller controls synchronization while switching. Local data is never auto-uploaded.
+window.BrisaApp={
+ getState:()=>structuredClone(state),
+ replaceScope(userId,payload){
+  document.querySelectorAll('dialog[open]').forEach(d=>d.close());
+  STORAGE=userId?'brisa-account-'+userId:'brisa-v2';TOUR_KEY=userId?'brisa-tutorial-'+userId:'brisa-tutorial-v1';
+  state=payload?migrate(payload):structuredClone(initial);undo=null;pendingProposal=null;editing=null;currentSession=null;revision++;currentView='today';agendaFilter='all';today=iso(new Date());week=monday(today);storePlan();render();
+ },
+ startAccountTour(){if(!state.tutorialDone)startTour()},
+ proposeImport(payload){return stageProposal(migrate(payload),'Importar este horario sustituirá el de la cuenta. Revisa los cambios antes de aplicar.',null,{allowDeficit:true})},
+ setBusy(value){$('appMain').inert=value;$('appSidebar').inert=value;$('appMain').setAttribute('aria-busy',String(value))},
+ downloadPending(payload){download(JSON.stringify(payload,null,2),'application/json','brisa-cambios-pendientes.json')}
+};

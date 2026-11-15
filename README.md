@@ -1,10 +1,31 @@
-# Brisa · v0.6.1
+# Brisa · v0.7.0
 
-Planificación personal en español, con un calendario tranquilo y progreso de estudio real. HTML, CSS y JavaScript sin dependencias ni claves. Repositorio: https://github.com/GonzaloGallegoGomez/brisa
+Planificación personal en español, con un calendario tranquilo y progreso de estudio real. HTML, CSS y JavaScript, con SDK oficial de Supabase incluido y configuración publicable. Repositorio: https://github.com/GonzaloGallegoGomez/brisa
 
 ## Ejecutar
 
 Con Python 3: `python3 -m http.server 3000 --directory dist` y abrir http://localhost:3000. Con Node 18+: `npm test` y `npm run check`. Para desplegar, servir `dist/` en un alojamiento estático. El manifiesto `.openai/hosting.json` solo está en el repositorio de despliegue Sites, no en GitHub.
+
+## Cuenta de prueba y sincronización Supabase
+
+La URL y clave publicable del proyecto del propietario se han incorporado a `dist/supabase-config.js`. Son configuración para navegador, no claves administrativas. No hay `service_role`, secret key ni contraseña de base de datos en el repositorio.
+
+1. Ejecutar [supabase/setup.sql](supabase/setup.sql) en SQL Editor del proyecto. La página `supabase-setup.html` ofrece la misma copia descargable y comprobación de versión.
+2. Crear un usuario de prueba confirmado en Authentication → Users del panel del propietario y mantener desactivadas las altas abiertas de Supabase durante el piloto.
+3. Entrar desde «Conectar cuenta». Cada cuenta empieza vacía; solo se importa el horario local si el usuario lo pide y aplica una propuesta.
+4. Probar con dos usuarios reales el aislamiento RLS y el guardado. Las pruebas automáticas actuales de sincronización usan un backend simulado; el script aún debe ejecutarse en el proyecto.
+
+El guardado está separado por usuario autenticado y utiliza una revisión de servidor. Un dispositivo con una revisión antigua recibe un conflicto en vez de sobrescribir al otro. Las escrituras incluyen también el ID de la cuenta esperado; SQL lo compara con `auth.uid()`. Los cambios pendientes se guardan por cuenta en el dispositivo. Recargar la nube permite revisar una recuperación, descargar una copia o elegir la nube; no hay fusión automática de dos planes.
+
+Cada modificación guarda una copia local y se intenta sincronizar al cabo de un segundo. Cerrar la pestaña antes del envío puede dejar cambios pendientes hasta volver a ese dispositivo. No se anuncia sincronización offline ni entrega en segundo plano. Al salir se intenta guardar y se limpia la caché de cuenta; si quedan cambios sin enviar se pide una decisión explícita para conservarlos aquí o descargarlos. Una copia pendiente retenida sigue accesible a quien tenga acceso al almacenamiento del navegador.
+
+El tutorial y preferencias forman parte del horario de la cuenta; terminarlo y sincronizarlo evita repetirlo en otro dispositivo. El modo local mantiene su horario separado. No se borra al iniciar sesión o cerrar la sesión de nube.
+
+El SDK oficial `@supabase/supabase-js` 2.119.0 se ha incluido en `dist/vendor` con su licencia. Se verificó la integridad SHA-512 del paquete npm antes de extraerlo. No se carga desde un CDN en cada visita. Las contraseñas del formulario se envían directamente al proveedor de autenticación; no se guardan como parte del calendario. El SDK conserva la sesión en `brisa-supabase-session` para poder seguir autenticado.
+
+**Alcance del piloto:** el alta pública de Brisa permanece desactivada y los textos legales siguen siendo borradores. No se ha implementado aún la baja automática de la identidad Auth ni la recuperación de contraseña por email en la interfaz. No invitar a público general hasta completar esos flujos, SMTP y los textos. El acceso privado de Sites se mantiene y es independiente de la cuenta de datos Supabase; conectar Supabase no publica el enlace para otros usuarios.
+
+Ver [guía de configuración y pruebas](docs/supabase.md).
 
 ## Interfaz más visual
 
@@ -69,17 +90,17 @@ Se comprueba contraste mínimo 4,5:1 para texto principal/secundario sobre super
 
 Los datos permanecen por navegador y origen en `brisa-v2` (esquema interno 3). La clave anterior y el tutorial siguen siendo compatibles. Se migran rutinas, objetivos, colores y nombre; se incorporan progreso, excepciones, preferencias y sesiones manuales. Un bloque pasado de v0.4 no se considera estudiado. Los días siguientes pueden redistribuirse hasta que registres lo realizado.
 
-Copia/restauración JSON incluye historial y preferencias. Restaurar muestra una propuesta de sustitución. Una copia inválida se rechaza. Si el almacenamiento falla, se muestra aviso y se puede descargar la copia antes de salir. No hay sincronización entre pestañas: evita editar en varias a la vez.
+Copia/restauración JSON incluye historial y preferencias. Restaurar muestra una propuesta de sustitución. Una copia inválida se rechaza. Si el almacenamiento falla, se muestra aviso y se puede descargar la copia antes de salir. En modo local no hay sincronización entre pestañas. En la cuenta, las revisiones impiden sobrescribir silenciosamente cambios de otro dispositivo; se recarga manualmente la nube para recibirlos.
 
 ## Otras funciones y límites
 
-Asistente por reglas para planes sociales, sueño y deshacer, con propuesta antes de cambiar. Los días nombrados se refieren a la semana visible. No incluye IA generativa, cuentas, backend ni push cuando está cerrada. Las futuras cuentas y la IA siguen siendo fases posteriores.
+Asistente por reglas para planes sociales, sueño y deshacer, con propuesta antes de cambiar. Los días nombrados se refieren a la semana visible. No incluye IA generativa ni push cuando está cerrada. El piloto de cuentas usa Supabase; aún no es un registro público de producción.
 
 Exportación ICS de la semana con aviso 30 minutos antes, cuya ejecución depende del calendario importador. Las fechas deben comprobarse con su fuente oficial. El motor es heurístico y no garantiza óptimo global; en casos con muchos objetivos o restricciones puede señalar falta de capacidad aunque otro reparto fuera posible. Las rutinas no tienen fecha de fin; eventos que cruzan medianoche necesitan dividirse. El sueño sigue siendo uniforme por día.
 
 ## Información legal
 
-El centro legal y los documentos v0.4.0-borrador siguen accesibles. No se ha activado registro ni recogida de credenciales. Ninguna casilla elimina derechos legales. Los textos contienen puntos pendientes antes de un lanzamiento a terceros. Ver [puesta en marcha legal](docs/registro-y-textos-legales.md) y [cuentas gratuitas](docs/cuentas-gratuitas.md).
+El centro legal y los documentos v0.4.0-borrador siguen accesibles. No se ha activado el registro público. El acceso a cuentas de prueba envía las credenciales directamente a Supabase. Ninguna casilla elimina derechos legales. Los textos contienen puntos pendientes antes de un lanzamiento a terceros. Ver [puesta en marcha legal](docs/registro-y-textos-legales.md) y [cuentas gratuitas](docs/cuentas-gratuitas.md).
 
 ## Validación
 
