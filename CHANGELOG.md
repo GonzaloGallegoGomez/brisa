@@ -1,5 +1,12 @@
 # Cambios
 
+## 0.10.0 — 2026-11-15
+
+- Servicio gratuito sin suscripciones ni prueba con vencimiento: fechas canceladas en servidor y documentos.
+- Cierre ordinario futuro a petición del titular, con aviso y 30 días de exportación.
+- Revisión documental de proveedores: DPA específico de Sites, retención Brevo y limitación de Gmail personal.
+- Revaluación de datos de identificación exigibles según naturaleza no económica; alta todavía cerrada.
+
 ## 0.9.1 — 2026-11-15
 
 - Prueba ampliada a 60 días globales, manteniendo 30 días para exportar.

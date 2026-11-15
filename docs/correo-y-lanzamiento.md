@@ -1,3 +1,5 @@
+> Actualización vigente v0.10.0: Brisa será gratuito sin fecha fija ni pagos. Se cancelan las antiguas fechas de prueba. Esta página conserva instrucciones históricas; el estado y pendientes actuales están en [apertura y cierre](lanzamiento-mvp.md) y [revisión de proveedores](proveedores-revision.md).
+
 # Correo y apertura · 15-11-2026
 
 **Actualización v0.9:** el titular ya configuró SMTP Brevo y confirmó recepción y cambio de contraseña. El servidor marca `smtp_ready=true`. Ya hay declaración de edad 18+ validada y registrada en servidor. Documentos 0.9.1-borrador y plan aprobado de 60 días + 30 para exportar. El registro sigue cerrado. El resto de esta página conserva las instrucciones de instalación; para estado y pendientes actuales ver [apertura y cierre](lanzamiento-mvp.md).

@@ -1,4 +1,4 @@
-# Brisa · v0.9.0
+# Brisa · v0.10.0
 
 Planificación personal en español, con un calendario tranquilo y progreso de estudio real. HTML, CSS y JavaScript, con SDK oficial de Supabase incluido y configuración publicable. Repositorio: https://github.com/GonzaloGallegoGomez/brisa
 
@@ -8,7 +8,7 @@ Con Python 3: `python3 -m http.server 3000 --directory dist` y abrir http://loca
 
 ## Prueba pública en preparación
 
-Documentos adaptados a mayores de 18 años, 60 días gratuitos y 30 posteriores para exportar antes de eliminar cuentas que no continúen expresamente. Sin tarjeta ni cobros automáticos. SMTP y recuperación comprobados por el titular; declaración de edad comprobada en servidor. Las fechas, identificación del titular, proveedores y cierre operativo siguen pendientes. Ver [guía de apertura y cierre](docs/lanzamiento-mvp.md). El registro permanece cerrado.
+Servicio gratuito para mayores de 18 años, sin pagos ni fecha fija de cierre. Las fechas anteriores de prueba quedan canceladas. En un cierre ordinario habrá aviso y 30 días para exportar antes del borrado. SMTP y recuperación comprobados; registro cerrado mientras se resuelven los pendientes documentados en [apertura y cierre](docs/lanzamiento-mvp.md).
 
 ## Cuenta de prueba y sincronización Supabase
 
