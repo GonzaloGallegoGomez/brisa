@@ -187,8 +187,8 @@ function addEvent(e,kind){
   next.pins.push({id:original.id,title:original.title,key:'pin-'+crypto.randomUUID(),sourceKey:Planner.sessionKey(original),date:e.date,start:e.start,end:e.end,type:'study'});
   return stageProposal(next,'Ajustar este bloque y repartir el resto de horas del objetivo.',source);
  }
- if(editing){next=Planner.removeEntry(next,editing.kind,editing.id,editing.date,editing.scope);if(editing.kind==='fixed'&&editing.scope==='one'){e.sourceFixedId=editing.id;}else e.id=editing.id;}
- const error=eventError(e,kind,next);if(error)return error;next[kind].push(e);return stageProposal(next,editing?'Revisar el cambio de horario y sus efectos en el estudio.':'Añadir «'+e.title+'» cuidando las horas de estudio.',source);
+ if(editing){if(editing.kind==='fixed'&&editing.scope==='all')next.fixed=next.fixed.filter(x=>x.id!==editing.id);else next=Planner.removeEntry(next,editing.kind,editing.id,editing.date,editing.scope);if(editing.kind==='fixed'&&editing.scope==='one'){e.sourceFixedId=editing.id;}else e.id=editing.id;}
+ const error=eventError(e,kind,next);if(error)return error;next[kind].push(e);return stageProposal(next,editing?.kind==='fixed'&&editing.scope==='all'?'Actualizar «'+e.title+'»: cada '+(e.intervalWeeks||1)+' semana(s), desde la semana del '+e.startsOn+'.':editing?'Cambiar solo esta sesión. El resto de la rutina se conserva.':'Añadir «'+e.title+'» cuidando las horas de estudio.',source);
 }
 function changeSleep(bed,hours){
  if(!validTime(bed)||!Number.isFinite(hours)||hours<4||hours>12)return 'Revisa la hora y las horas de sueño.';
@@ -212,7 +212,7 @@ function submitEntry(e){
  if(error)$('formError').textContent=error;
 }
 function prepareEditor(){
- $('kind').disabled=false;$('tabFixed').disabled=false;$('tabNew').disabled=false;$('title').readOnly=false;$('editingScope').hidden=true;$('deleteEntry').hidden=true;$('difficulty').value='2';
+ $('kind').disabled=false;$('tabFixed').disabled=false;$('tabNew').disabled=false;$('title').readOnly=false;$('editingScope').hidden=true;$('deleteEntry').hidden=true;$('deleteRoutineActions').hidden=true;$('difficulty').value='2';
 }
 const originalOpenEntry=openEntry;
 openEntry=function(next='fixed'){editing=null;prepareEditor();originalOpenEntry(next);$('entryTitle').textContent='Añadir a tu calendario';$('saveEntry').textContent='Revisar propuesta';};
@@ -224,20 +224,20 @@ function fillEditor(){
  const one=ref.kind==='fixed'&&ref.scope==='one',kind=ref.kind==='tasks'?'task':ref.kind==='fixed'&&!one?'fixed':'social';
  setMode(kind==='social'?'new':'fixed');$('kind').value=kind;updateFields();$('kind').disabled=true;$('tabFixed').disabled=true;$('tabNew').disabled=true;
  $('entryTitle').textContent=ref.kind==='study'?'Ajustar bloque de estudio':'Editar '+(ref.kind==='tasks'?'objetivo':one?'esta sesión':'horario');$('title').value=value.title;
- $('editingScope').hidden=ref.kind!=='fixed'||!ref.date;$('editScope').value=ref.scope;$('deleteEntry').hidden=false;$('deleteEntry').textContent=ref.kind==='study'?'Liberar y recolocar este bloque':one?'Cancelar solo esta sesión':'Eliminar '+(ref.kind==='fixed'?'toda la rutina':'elemento');
+ $('editingScope').hidden=ref.kind!=='fixed';$('scopeAll').setAttribute('aria-pressed',String(!one));$('scopeOne').setAttribute('aria-pressed',String(one));$('scopeOne').disabled=!ref.date;$('scopeHint').textContent=one?'La repetición del resto no cambia.':'La periodicidad se aplica a toda la rutina.';$('deleteRoutineActions').hidden=ref.kind!=='fixed';$('deleteOccurrence').hidden=!ref.date;$('deleteEntry').hidden=ref.kind==='fixed';$('deleteEntry').textContent=ref.kind==='study'?'Liberar y recolocar este bloque':one?'Cancelar solo esta sesión':'Eliminar '+(ref.kind==='fixed'?'toda la rutina':'elemento');
  if(kind==='task'){$('due').value=value.due;$('dueTime').value=value.dueTime;$('hours').value=value.hours;$('examDuration').value=value.duration;$('difficulty').value=value.difficulty||2;}
  else{$('from').value=fmt(value.start);$('to').value=fmt(value.end);$('eventDate').value=ref.date||value.date||today;if(kind==='fixed'){document.querySelectorAll('input[name="days"]').forEach(c=>{c.checked=value.days.includes(Number(c.value))});const interval=value.intervalWeeks||1;$('repeatWeeks').value=interval<=4?String(interval):'custom';$('customRepeatWeeks').value=interval;$('repeatStart').value=value.startsOn||week;updateRepeatPreview();}}
  if(ref.kind==='study'){$('title').readOnly=true;$('title').value=ref.event.title;}
 }
 function openSession(e){currentSession=e;$('sessionTitle').textContent=e.title;$('sessionInfo').textContent=clockLabel(e)+' · '+Math.round((e.end-e.start)*60)+' min previstos';const existing=state.progress.find(p=>p.key===Planner.sessionKey(e));$('progressStatus').value=existing?.status||'done';$('actualMinutes').max=Math.round((e.end-e.start)*60);$('actualMinutes').value=existing?.actualMinutes??Math.round((e.end-e.start)*60);$('actualMinutesLabel').hidden=$('progressStatus').value!=='partial';$('actualMinutes').required=$('progressStatus').value==='partial';$('actualMinutes').disabled=$('progressStatus').value!=='partial';$('progressError').textContent='';$('editSession').disabled=!!existing||e.date<today||e.date===today&&e.start<new Date().getHours()+new Date().getMinutes()/60;$('sessionModal').showModal()}
 function findEvent(key){return [...result.events,...Planner.plan(state,today,1).events].find(e=>e.key===key)}
-function handleEventClick(e){const button=e.target.closest('[data-event-key]');if(!button)return;const event=findEvent(button.dataset.eventKey);if(!event)return;if(event.type==='rest'||event.type==='break'){openStudyPrefs();return}if(event.type==='study'||event.type==='done'){openSession(event);return}openEdit(event.type==='exam'?'tasks':event.type,event.id,event.date,event.type==='fixed'?'one':'all');}
+function handleEventClick(e){const button=e.target.closest('[data-event-key]');if(!button)return;const event=findEvent(button.dataset.eventKey);if(!event)return;if(event.type==='rest'||event.type==='break'){openStudyPrefs();return}if(event.type==='study'||event.type==='done'){openSession(event);return}openEdit(event.type==='exam'?'tasks':event.type,event.id,event.date,'all');}
 function openStudyPrefs(){if($('tour').open)return;const p=state.studyPrefs;
  const fields={studyStart:p.start,studyEnd:p.end,sessionLength:p.sessionMinutes,breakLength:p.breakMinutes,travelBuffer:p.bufferMinutes,reserveTime:p.reserveMinutes,dailyLimit:p.maxDailyHours,taskDailyLimit:p.maxTaskDailyHours,preferredPeriod:p.preferredPeriod,lunchStart:p.lunchStart,lunchEnd:p.lunchEnd};for(const [id,value] of Object.entries(fields))$(id).value=value;
  document.querySelectorAll('input[name="daysOff"]').forEach(c=>{c.checked=p.daysOff.includes(Number(c.value))});$('lunchEnabled').checked=p.lunchEnabled;$('studyPrefsError').textContent='';if($('settingsModal').open)$('settingsModal').close();$('studyPrefsModal').showModal();
 }
 function setupEnhancements(){
- $('openNext').onclick=()=>{const e=currentNext;if(!e){openEntry('new');return}if(['rest','break'].includes(e.type))openStudyPrefs();else if(e.type==='study'||e.type==='done')openSession(e);else openEdit(e.type==='exam'?'tasks':e.type,e.id,e.date,e.type==='fixed'?'one':'all');};
+ $('openNext').onclick=()=>{const e=currentNext;if(!e){openEntry('new');return}if(['rest','break'].includes(e.type))openStudyPrefs();else if(e.type==='study'||e.type==='done')openSession(e);else openEdit(e.type==='exam'?'tasks':e.type,e.id,e.date,'all');};
  document.querySelectorAll('[data-agenda-filter]').forEach(b=>{b.onclick=()=>{agendaFilter=b.dataset.agendaFilter;renderAgenda()}});
  $('goalsNav').onclick=()=>{$('goalsDisclosure').open=true;$('details').scrollIntoView({behavior:'smooth'})};
  $('todayNav').onclick=()=>showView('today');$('weekNav').onclick=()=>showView('week');$('todayView').onclick=()=>showView('today');$('weekView').onclick=()=>showView('week');
@@ -245,7 +245,7 @@ function setupEnhancements(){
  $('calendar').onclick=handleEventClick;$('weekAgenda').onclick=handleEventClick;$('todayAgenda').onclick=handleEventClick;
  $('pastSessions').onclick=e=>{const b=e.target.closest('[data-past-key]');if(!b)return;const event=calculate().unreviewed.find(x=>Planner.sessionKey(x)===b.dataset.pastKey);if(event)openSession(event)};
  $('items').onclick=e=>{const pin=e.target.closest('[data-invalid-pin]');if(pin){const event=result.invalidPins.find(x=>x.key===pin.dataset.invalidPin);if(event)openEdit('study',event.id,event.date,'one',event);return;}const b=e.target.closest('[data-edit-kind]');if(b)openEdit(b.dataset.editKind,b.dataset.id)};
- $('editScope').onchange=()=>{if(editing){editing.scope=$('editScope').value;fillEditor()}};
+ $('scopeAll').onclick=()=>setEditScope('all');$('scopeOne').onclick=()=>setEditScope('one');$('deleteOccurrence').onclick=()=>deleteRoutine('one');$('deleteSeries').onclick=()=>deleteRoutine('all');
  $('deleteEntry').onclick=()=>{if(!editing)return;let next;if(editing.kind==='study'){next=structuredClone(state);next.pins=next.pins.filter(p=>p.key!==editing.event.key);next.skips.push({...editing.event,key:Planner.sessionKey(editing.event)});}else next=Planner.removeEntry(state,editing.kind,editing.id,editing.date,editing.scope);stageProposal(next,editing.kind==='tasks'?'Eliminar este objetivo y su historial de estudio. Revisa el resto del plan.':'Revisar la eliminación y el nuevo reparto.','modal');};
  $('applyProposal').onclick=applyProposal;$('cancelProposal').onclick=()=>cancelProposal();$('cancelProposalTop').onclick=()=>cancelProposal();$('adjustProposal').onclick=()=>cancelProposal(true);$('proposalModal').oncancel=e=>{e.preventDefault();cancelProposal()};
  $('tryMoreTime').onclick=()=>{if(!pendingProposal)return;const p=pendingProposal.next.studyPrefs;p.maxDailyHours=Math.min(10,p.maxDailyHours+1);p.maxTaskDailyHours=Math.min(6,p.maxTaskDailyHours+1);pendingProposal.description+=' · Propuesta: límites diarios aumentados en 1 h (hasta los máximos permitidos).';drawProposal()};
@@ -266,3 +266,18 @@ function setupEnhancements(){
  $('reply').textContent=message;$('prompt').value='';};
 }
 setupEnhancements();
+
+function setEditScope(scope){
+ if(!editing||editing.kind!=='fixed'||scope==='one'&&!editing.date)return;
+ const values={title:$('title').value,from:$('from').value,to:$('to').value,eventDate:$('eventDate').value};
+ if(editing.scope==='all')editing.repeatDraft={repeat:$('repeatWeeks').value,custom:$('customRepeatWeeks').value,start:$('repeatStart').value,days:[...document.querySelectorAll('input[name="days"]:checked')].map(x=>Number(x.value))};
+ editing.scope=scope;fillEditor();for(const [id,value] of Object.entries(values))$(id).value=value;
+ if(scope==='all'&&editing.repeatDraft){const d=editing.repeatDraft;$('repeatWeeks').value=d.repeat;$('customRepeatWeeks').value=d.custom;$('repeatStart').value=d.start;document.querySelectorAll('input[name="days"]').forEach(c=>{c.checked=d.days.includes(Number(c.value))});updateRepeatPreview();}
+}
+function deleteRoutine(scope){
+ if(!editing||editing.kind!=='fixed'||scope==='one'&&!editing.date)return;
+ const routine=state.fixed.find(e=>e.id===editing.id);if(!routine)return;
+ const next=Planner.removeEntry(state,'fixed',editing.id,editing.date,scope);
+ const message=scope==='all'?'Eliminar toda la rutina «'+routine.title+'» de todas las semanas, incluidas sus excepciones.':'Eliminar solo la sesión del '+editing.date+'. Las demás semanas se conservan.';
+ stageProposal(next,message,'modal');
+}

@@ -1,5 +1,13 @@
 # Cambios
 
+## 0.6.1 — 2026-11-15
+
+- El editor de rutinas abre la serie completa por defecto, con periodicidad visible.
+- Botones explícitos para editar una sesión o todas las semanas, conservando los cambios escritos.
+- Eliminación diferenciada de una sesión o toda la rutina, con propuesta previa.
+- Editar periodicidad conserva las sesiones movidas individualmente; borrar toda la serie las elimina.
+- Cinco pruebas de regresión de edición, frecuencia, borrado, confirmación y persistencia.
+
 ## 0.6.0 — 2026-11-15
 
 - Rediseño expresivo con tarjetas de color, degradados suaves, progreso circular y barras de objetivos.

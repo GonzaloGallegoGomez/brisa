@@ -1,4 +1,4 @@
-# Brisa · v0.6.0
+# Brisa · v0.6.1
 
 Planificación personal en español, con un calendario tranquilo y progreso de estudio real. HTML, CSS y JavaScript sin dependencias ni claves. Repositorio: https://github.com/GonzaloGallegoGomez/brisa
 
@@ -24,6 +24,7 @@ El tutorial inicial aparece una tarjeta a la vez, hasta terminar. Se puede repet
 
 - Horario fijo: clases, trabajo, transporte, exámenes y sueño.
 - Horario nuevo: planes para una fecha concreta.
+- Al abrir una rutina desde el calendario se muestran «Todas las semanas» y la periodicidad editable. El botón «Solo esta sesión» permite crear una excepción. La sección Eliminar siempre ofrece botones separados para una sesión y toda la rutina (cuando hay una fecha concreta).
 - Las rutinas permiten cada 1, 2, 3 o hasta 52 semanas, con lunes de referencia. Una excepción cambia o cancela solo una fecha. Editar toda la rutina conserva las excepciones; eliminar la rutina elimina también sus excepciones convertidas en eventos puntuales.
 - Pulsa un bloque en la agenda o calendario para editar. Los exámenes abren su objetivo. Las sesiones de estudio abren el progreso y permiten mover o cambiar la duración de un bloque futuro.
 - Los bloques de estudio movidos manualmente quedan fijados. El resto del objetivo se distribuye automáticamente; un bloque manual incompatible se muestra para corregirlo. Los bloques ya iniciados no se mueven desde el editor: se revisa su progreso.
