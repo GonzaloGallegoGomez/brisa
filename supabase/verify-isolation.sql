@@ -9,13 +9,17 @@ begin
  exception when others then if sqlerrm not like '%BRISA_REGISTRATION_CLOSED%' then raise; end if; end;
  update public.brisa_registration_settings set registration_open=true,smtp_ready=true,legal_ready=true,terms_version='test-v1',privacy_version='test-v1';
  begin
-  insert into auth.users(id,email) values(a,'missing-'||a||'@example.invalid');
+  insert into auth.users(id,email,raw_user_meta_data) values(a,'missing-'||a||'@example.invalid','{"brisa_adult":true}');
   raise exception 'FAIL: missing terms accepted';
  exception when others then if sqlerrm not like '%BRISA_TERMS_REQUIRED%' then raise; end if; end;
+ begin
+  insert into auth.users(id,email,raw_user_meta_data) values(a,'no-adult-'||a||'@example.invalid','{"brisa_accept_terms":true,"brisa_terms_version":"test-v1","brisa_privacy_version":"test-v1","brisa_adult":"true"}');
+  raise exception 'FAIL: string adult flag accepted';
+ exception when others then if sqlerrm not like '%BRISA_ADULT_REQUIRED%' then raise; end if; end;
  insert into auth.users(id,email,email_confirmed_at,raw_user_meta_data) values
- (a,'test-'||a||'@example.invalid',now(),'{"brisa_accept_terms":true,"brisa_terms_version":"test-v1","brisa_privacy_version":"test-v1"}'),
- (b,'test-'||b||'@example.invalid',now(),'{"brisa_accept_terms":true,"brisa_terms_version":"test-v1","brisa_privacy_version":"test-v1"}');
- select count(*) into n from public.brisa_terms_acceptances where user_id in(a,b);if n<>2 then raise exception 'FAIL: acceptance not logged';end if;
+ (a,'test-'||a||'@example.invalid',now(),'{"brisa_adult":true,"brisa_accept_terms":true,"brisa_terms_version":"test-v1","brisa_privacy_version":"test-v1"}'),
+ (b,'test-'||b||'@example.invalid',now(),'{"brisa_adult":true,"brisa_accept_terms":true,"brisa_terms_version":"test-v1","brisa_privacy_version":"test-v1"}');
+ select count(*) into n from public.brisa_terms_acceptances where user_id in(a,b) and adult_declared; if n<>2 then raise exception 'FAIL: acceptance not logged';end if;
  perform set_config('request.jwt.claim.sub',a::text,true);
  set local role authenticated;
  perform public.brisa_save_calendar(a,p,0);
@@ -37,4 +41,4 @@ begin
  select count(*) into n from public.brisa_calendars where user_id=a;if n<>0 then raise exception 'FAIL: delete cascade';end if;
 end $$;
 rollback;
-select 'PASS: signup gate, acceptance, own saves, cross-user denial, revision conflict, deletion cascade; fixtures rolled back' as result;
+select 'PASS: signup gate, adult declaration required and logged, acceptance, own saves, cross-user denial, revision conflict, deletion cascade; fixtures rolled back' as result;

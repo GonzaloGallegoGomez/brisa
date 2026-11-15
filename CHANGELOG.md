@@ -1,5 +1,13 @@
 # Cambios
 
+## 0.9.0 — 2026-11-15
+
+- Condiciones, privacidad, aviso y almacenamiento adaptados a la prueba gratuita 18+, 20 días globales y 30 para exportar, sin conversión automática a pago.
+- Declaración de mayoría de edad separada y validada en servidor, evidencia protegida.
+- SMTP confirmado por el titular; registro cerrado mientras se completa la apertura.
+- Guía operativa de proveedores, derechos, incidentes, medición mínima y cierre.
+- 76 pruebas Node y prueba SQL real de edad/RLS/revisión/cascada con fixtures revertidos.
+
 ## 0.8.0 — 2026-11-15
 
 - Registro condicionado por estado del servidor y aceptación versionada protegida.

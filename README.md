@@ -1,10 +1,14 @@
-# Brisa · v0.8.0
+# Brisa · v0.9.0
 
 Planificación personal en español, con un calendario tranquilo y progreso de estudio real. HTML, CSS y JavaScript, con SDK oficial de Supabase incluido y configuración publicable. Repositorio: https://github.com/GonzaloGallegoGomez/brisa
 
 ## Ejecutar
 
 Con Python 3: `python3 -m http.server 3000 --directory dist` y abrir http://localhost:3000. Con Node 18+: `npm test` y `npm run check`. Para desplegar, servir `dist/` en un alojamiento estático. El manifiesto `.openai/hosting.json` solo está en el repositorio de despliegue Sites, no en GitHub.
+
+## Prueba pública en preparación
+
+Documentos adaptados a mayores de 18 años, 20 días gratuitos y 30 posteriores para exportar antes de eliminar cuentas que no continúen expresamente. Sin tarjeta ni cobros automáticos. SMTP y recuperación comprobados por el titular; declaración de edad comprobada en servidor. Las fechas, identificación del titular, proveedores y cierre operativo siguen pendientes. Ver [guía de apertura y cierre](docs/lanzamiento-mvp.md). El registro permanece cerrado.
 
 ## Cuenta de prueba y sincronización Supabase
 

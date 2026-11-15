@@ -1,6 +1,6 @@
 {
   "name": "brisa-mvp",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "private": true,
   "description": "Planificador personal tranquilo, sin dependencias",
   "scripts": {
