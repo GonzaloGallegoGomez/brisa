@@ -1,5 +1,14 @@
 # Cambios
 
+## 0.8.0 — 2026-11-15
+
+- Registro condicionado por estado del servidor y aceptación versionada protegida.
+- Confirmación y recuperación PKCE, enlace sin credenciales conservadas en URL.
+- Baja autenticada con cascada del horario y descarga previa opcional.
+- SQL y función de baja instalados en Supabase Free.
+- Pruebas reales de RLS y revisión con fixtures revertidos, 75 pruebas Node.
+- Plantillas de correo e instrucciones SMTP gratuitas; envío y documentos finales pendientes.
+
 ## 0.7.0 — 2026-11-15
 
 - URL y clave publicable del propietario para conectar Supabase.

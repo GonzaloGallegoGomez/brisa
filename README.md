@@ -1,4 +1,4 @@
-# Brisa · v0.7.0
+# Brisa · v0.8.0
 
 Planificación personal en español, con un calendario tranquilo y progreso de estudio real. HTML, CSS y JavaScript, con SDK oficial de Supabase incluido y configuración publicable. Repositorio: https://github.com/GonzaloGallegoGomez/brisa
 
@@ -10,10 +10,7 @@ Con Python 3: `python3 -m http.server 3000 --directory dist` y abrir http://loca
 
 La URL y clave publicable del proyecto del propietario se han incorporado a `dist/supabase-config.js`. Son configuración para navegador, no claves administrativas. No hay `service_role`, secret key ni contraseña de base de datos en el repositorio.
 
-1. Ejecutar [supabase/setup.sql](supabase/setup.sql) en SQL Editor del proyecto. La página `supabase-setup.html` ofrece la misma copia descargable y comprobación de versión.
-2. Crear un usuario de prueba confirmado en Authentication → Users del panel del propietario y mantener desactivadas las altas abiertas de Supabase durante el piloto.
-3. Entrar desde «Conectar cuenta». Cada cuenta empieza vacía; solo se importa el horario local si el usuario lo pide y aplica una propuesta.
-4. Probar con dos usuarios reales el aislamiento RLS y el guardado. Las pruebas automáticas actuales de sincronización usan un backend simulado; el script aún debe ejecutarse en el proyecto.
+La base de datos del propietario ya está instalada y verificada. Se han añadido cierre de altas en servidor, aceptación versionada y baja autenticada. No volver a ejecutar el setup antiguo sobre el proyecto actual. Para una instalación nueva, el orden y los pendientes están en [correo y lanzamiento](docs/correo-y-lanzamiento.md).
 
 El guardado está separado por usuario autenticado y utiliza una revisión de servidor. Un dispositivo con una revisión antigua recibe un conflicto en vez de sobrescribir al otro. Las escrituras incluyen también el ID de la cuenta esperado; SQL lo compara con `auth.uid()`. Los cambios pendientes se guardan por cuenta en el dispositivo. Recargar la nube permite revisar una recuperación, descargar una copia o elegir la nube; no hay fusión automática de dos planes.
 
@@ -23,9 +20,9 @@ El tutorial y preferencias forman parte del horario de la cuenta; terminarlo y s
 
 El SDK oficial `@supabase/supabase-js` 2.119.0 se ha incluido en `dist/vendor` con su licencia. Se verificó la integridad SHA-512 del paquete npm antes de extraerlo. No se carga desde un CDN en cada visita. Las contraseñas del formulario se envían directamente al proveedor de autenticación; no se guardan como parte del calendario. El SDK conserva la sesión en `brisa-supabase-session` para poder seguir autenticado.
 
-**Alcance del piloto:** el alta pública de Brisa permanece desactivada y los textos legales siguen siendo borradores. No se ha implementado aún la baja automática de la identidad Auth ni la recuperación de contraseña por email en la interfaz. No invitar a público general hasta completar esos flujos, SMTP y los textos. El acceso privado de Sites se mantiene y es independiente de la cuenta de datos Supabase; conectar Supabase no publica el enlace para otros usuarios.
+**Alcance del piloto:** formularios de alta, confirmación y recuperación preparados; eliminación autónoma desplegada. El registro sigue cerrado por SMTP sin configurar y documentos legales en borrador. No se ha enviado un correo real. El enlace permite compartir el modo local; cada cuenta Supabase mantiene su horario privado.
 
-Ver [guía de configuración y pruebas](docs/supabase.md).
+Ver [correo y lanzamiento](docs/correo-y-lanzamiento.md).
 
 ## Interfaz más visual
 
